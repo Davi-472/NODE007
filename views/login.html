@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <main>
+        <div id="dados">
+
+        </div>
+        <button onclick="loginmodal.showModal()">Login</button>
+    </main>
+
+    <dialog id="loginmodal">
+        <form id="f">
+            <label for="email">Email</label>
+            <input type="email" required id="email" name="email"><br>
+            <label for="senha">Senha</label>
+            <input type="password" required id="senha" name="senha"><br>
+            <button>Entrar</button>
+            <button onclick="loginmodal.close()">Fechar</button>
+        </form>
+    </dialog>
+
+    <script>
+        document.getElementById("f").addEventListener('submit',async(e)=>{
+            e.preventDefault()
+            const email = document.getElementById("email").value 
+            const senha = document.getElementById("senha").value
+            const corpo = {
+                email:email,
+                senha:senha
+            }
+            console.log(corpo)
+            const res = await fetch('http://localhost:3000/login',{
+                headers:{
+                    "content-type":"application/json"
+                },
+                method:"POST",
+                body:JSON.stringify(corpo)
+            })
+            const dados = await res.json()
+            if(dados.ok){
+                //console.log(dados)
+                localStorage.setItem("user",JSON.stringify(dados.user))
+                localStorage.setItem("token",dados.token)
+                loginmodal.close()
+                document.getElementById("dados").innerHTML= `
+                <b>${dados.user.nome}</b><br><i>${dados.user.email}</i>`
+            }
+        })
+    </script>
+
+</body>
+</html>
